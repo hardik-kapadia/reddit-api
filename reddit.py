@@ -12,7 +12,7 @@ from gfycat.error import GfycatClientError
 
 # Store your API keys in a config.py module and use the module to access them (for security)
 # Comment out the next line if you don't want to
-import config as conf
+# import config as conf
 
 import os
 
