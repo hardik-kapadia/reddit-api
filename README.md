@@ -12,13 +12,15 @@ An Api Client to download images (posts) from a certain subreddit corresponsding
 
 ### Usage
 
-```
+``` python
+
+#generate an instance
 reddit = reddit_api.generate_instance_with_gfy("reddit_client_id","reddit_client_secret","user_agent","reddit_username","reddit_password","gfy_id","gfy_secret")
 
 # or without gif links
+reddit = reddit_api.generate_instance_with_gfy("reddit_client_id","reddit_client_secret","user_agent","reddit_username","reddit_password")
 
-reddit_api.generate_instance_with_gfy("reddit_client_id","reddit_client_secret","user_agent","reddit_username","reddit_password")
-
+# Now get posts
 posts,matching_titles,matching_comments=reddit.get_posts("subreddit_name",["keyword_1","keyword_2"],limit]
 
 ```
