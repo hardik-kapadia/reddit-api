@@ -5,7 +5,7 @@ An Api Client to download images (posts) from a certain subreddit corresponsding
 ### Prequisites
 
 1. A Reddit account
-2. A Reddit OAuth Credentials (get them [here](https://ssl.reddit.com/prefs/apps/))
+2. Reddit OAuth Credentials (get them [here](https://ssl.reddit.com/prefs/apps/))
 3. [Optional] Gfycat API credentials (get the [here](https://developers.gfycat.com/signup/#/apiform))
 
 ### Usage
