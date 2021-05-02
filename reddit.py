@@ -49,7 +49,7 @@ class reddit_api:
 
     def get_posts(self, subreddit, words, limit):
 
-        dankmemes = self.__reddit.subreddit(subreddit)
+        fsubr = self.__reddit.subreddit(subreddit)
 
         if not os.path.exists(subreddit):
             os.makedirs(subreddit)
@@ -59,18 +59,23 @@ class reddit_api:
 
         submissions = []
 
-        for submission in dankmemes.hot(limit=limit):
+        for submission in fsubr.hot(limit=limit):
 
             title = submission.title
             # print("Title:", title)
 
             if self.__contains_keys(words, title):
 
-                if(self.__is_img(submission.url)):
-
-                    reddit_api.__download_img(submission.url, title, subreddit)
-                    t_count += 1
+                if(submission.is_self):
+                    reddit_api.createText(submission, subreddit)
                     submissions.append(submission)
+                else:
+                    if(self.__is_img(submission.url)):
+
+                        reddit_api.__download_img(
+                            submission.url, title, subreddit)
+                        t_count += 1
+                        submissions.append(submission)
 
             else:
 
@@ -81,13 +86,18 @@ class reddit_api:
 
                         c_count += 1
 
-                        if(self.__is_img(submission.url)):
-
-                            reddit_api.__download_img(
-                                submission.url, title, subreddit)
+                        if(submission.is_self):
+                            reddit_api.createText(submission, subreddit)
                             submissions.append(submission)
+                        else:
 
-                            break
+                            if(self.__is_img(submission.url)):
+
+                                reddit_api.__download_img(
+                                    submission.url, title, subreddit)
+                                submissions.append(submission)
+
+                                break
 
         return submissions, t_count, c_count
 
@@ -105,7 +115,18 @@ class reddit_api:
             return 'gfycat.com' in url
 
     @staticmethod
+    def createText(submission, subreddit):
+        title = submission.title
+        filename = subreddit+"/"+title+".txt"
+        filename = sanitize_filepath(filename)
+        f = open(filename, "w")
+        text = submission.selftext
+        f.write(text)
+        f.close()
+
+    @staticmethod
     def __download_img(url, title, folder):
+        
         buffer_size = 1024
 
         if('gfycat.com' in url):
