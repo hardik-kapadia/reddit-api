@@ -1,4 +1,5 @@
 from re import S
+
 import praw
 from praw.reddit import Submission, Subreddit, Redditor
 
@@ -49,6 +50,8 @@ class reddit_api:
 
     def get_posts(self, subreddit, words, limit):
 
+        print('Entered the fray')
+
         fsubr = self.__reddit.subreddit(subreddit)
 
         if not os.path.exists(subreddit):
@@ -58,48 +61,50 @@ class reddit_api:
         c_count = 0
 
         submissions = []
+        try:
+            for submission in fsubr.hot(limit=limit):
 
-        for submission in fsubr.hot(limit=limit):
+                title = submission.title
+                print("Title:", title)
 
-            title = submission.title
-            # print("Title:", title)
+                if self.__contains_keys(words, title):
 
-            if self.__contains_keys(words, title):
-
-                if(submission.is_self):
-                    reddit_api.createText(submission, subreddit)
-                    submissions.append(submission)
-                else:
-                    if(self.__is_img(submission.url)):
-
-                        reddit_api.__download_img(
-                            submission.url, title, subreddit)
-                        t_count += 1
+                    if(submission.is_self):
+                        reddit_api.createText(submission, subreddit)
                         submissions.append(submission)
+                    else:
+                        if(self.__is_img(submission.url)):
 
-            else:
-
-                submission.comments.replace_more(limit=0)
-                for comment in submission.comments:
-
-                    if reddit_api.__contains_keys(words, comment.body):
-
-                        c_count += 1
-
-                        if(submission.is_self):
-                            reddit_api.createText(submission, subreddit)
+                            reddit_api.__download_img(
+                                submission.url, title, subreddit)
+                            t_count += 1
                             submissions.append(submission)
-                        else:
 
-                            if(self.__is_img(submission.url)):
+                else:
 
-                                reddit_api.__download_img(
-                                    submission.url, title, subreddit)
+                    submission.comments.replace_more(limit=0)
+                    for comment in submission.comments:
+
+                        if reddit_api.__contains_keys(words, comment.body):
+
+                            c_count += 1
+
+                            if(submission.is_self):
+                                reddit_api.createText(submission, subreddit)
                                 submissions.append(submission)
+                            else:
 
-                                break
+                                if(self.__is_img(submission.url)):
 
-        return submissions, t_count, c_count
+                                    reddit_api.__download_img(
+                                        submission.url, title, subreddit)
+                                    submissions.append(submission)
+
+                                    break
+
+            return submissions, t_count, c_count
+        except:
+            return submissions, 0, 0
 
     def __is_img(self, url):
 
@@ -126,7 +131,7 @@ class reddit_api:
 
     @staticmethod
     def __download_img(url, title, folder):
-        
+
         buffer_size = 1024
 
         if('gfycat.com' in url):
